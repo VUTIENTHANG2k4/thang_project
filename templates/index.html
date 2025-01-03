@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project_1</title>
+     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #4da6ff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #3c8bdf;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center text-primary mb-4">Phần mềm chuyển đổi</h1>
+        <!-- Chuyển đổi cơ số -->
+        <div class="card">
+
+            <div class="card-header bg-primary text-white">
+                 <h2>Chuyển đổi cơ số</h2>
+            </div>
+
+            <div class="card-body">
+
+                <form id="convertBaseForm">
+                    <div class="mb-3">
+                        <label for="number" class="form-label">Số cần chuyển đổi:</label>
+                        <input type="text" class="form-control" id="number" name="number" placeholder="Nhập số" required>
+                    </div>
+                <div class="mb-3">
+                    <label for="from_base" class="form-label">Hệ cơ số hiện tại:</label>
+                    <select class="form-select" id="from_base" name="from_base" required>
+                        <option value="10">Hệ thập phân (Cơ số 10)</option>
+                        <option value="2">Hệ nhị phân (Cơ số 2)</option>
+                        <option value="8">Hệ bát phân (Cơ số 8)</option>
+                        <option value="16">Hệ thập lục phân (Cơ số 16)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="to_base" class="form-label">Hệ cơ số muốn chuyển:</label>
+                    <select class="form-select" id="to_base" name="to_base" required>
+                        <option value="10">Hệ thập phân (Cơ số 10)</option>
+                        <option value="2">Hệ nhị phân (Cơ số 2)</option>
+                        <option value="8">Hệ bát phân (Cơ số 8)</option>
+                        <option value="16">Hệ thập lục phân (Cơ số 16)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Chuyển đổi</button>
+            </form>
+            <p id="resultBase" class="mt-3 text-success"></p>
+        </div>
+    </div>
+
+        <!-- Chuyển đổi văn bản -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2>Chuyển đổi văn bản</h2>
+            </div>
+            <div class="card-body">
+                <form id="convertTextForm">
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Văn bản:</label>
+                        <textarea class="form-control" id="text" name="text" rows="4" placeholder="Nhập văn bản" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Chuyển đổi</button>
+                </form>
+                <p id="resultText" class="mt-3 text-success"></p>
+            </div>
+        </div>
+
+        <!-- Tính Checksum -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2>Tính Checksum</h2>
+            </div>
+
+            <div class="card-body">
+                <form id="calculateChecksumForm">
+                    <div class="mb-3">
+                        <label for="bits" class="form-label">Chuỗi bit:</label>
+                        <input type="text" class="form-control" id="bits" name="bits" placeholder="Chuỗi bit" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mode" class="form-label">Phương pháp:</label>
+                        <select class="form-select" id="mode" name="mode">
+                            <option value="sum">Tính tổng</option>
+                            <option value="2s_complement">Mã bù 2</option>
+                            <option value="xor">XOR</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bit_size" class="form-label">Kích thước (8, 16, 32):</label>
+                        <input type="number" class="form-control" id="bit_size" name="bit_size" placeholder="Nhập kích thước" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Tính toán</button>
+                </form>
+                <p id="resultChecksum" class="mt-3 text-success"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form xử lý chuyển đổi cơ số
+        document.getElementById("convertBaseForm").onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch("/convert_base", { method: "POST", body: formData });
+            const data = await response.json();
+            document.getElementById("resultBase").innerText = "Kết quả: " + data.result;
+        };
+
+        // Form xử lý chuyển đổi văn bản
+        document.getElementById("convertTextForm").onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch("/convert_text", { method: "POST", body: formData });
+            const data = await response.json();
+            document.getElementById("resultText").innerText = 
+                `Mã ASCII: ${data.ascii}\nMã nhị phân: ${data.binary}\nMã hexa: ${data.hex}`;
+        };
+
+        // Form xử lý tính checksum
+        document.getElementById("calculateChecksumForm").onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch("/calculate_checksum", { method: "POST", body: formData });
+            const data = await response.json();
+            document.getElementById("resultChecksum").innerText = "Checksum: " + data.checksum;
+        };
+    </script>
+</body>
+</html>
